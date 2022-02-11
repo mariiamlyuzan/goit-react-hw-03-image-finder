@@ -8,7 +8,7 @@ async function fetchImages(name, page) {
 
   const images = await axios.get(url);
 
-  return images.data.hits;
+  return images.data;
 }
 
 export default fetchImages;

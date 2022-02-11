@@ -38,24 +38,24 @@ export default class App extends Component {
     if (prevName !== nextName || prevPage !== nextPage) {
       this.setState({ status: Status.PENDING });
 
-      fetchImages(nextName, this.state.page)
+      fetchImages(nextName, nextPage)
         .then(images => {
           this.setState(prevState => {
             return {
-              images: [...prevState.images, ...images],
+              images: [...prevState.images, ...images.hits],
               status: Status.RESOLVED,
               loadEnd: true,
             };
           });
-
-          if (images.length === 0) {
+          const endPage = images.totalHits / images.hits.length;
+          if (images.hits.length === 0) {
             this.setState({ loadEnd: false });
             toast.error(
               'Sorry, there are no images matching your search query. Please try again.',
             );
           }
 
-          if (nextPage === 42) {
+          if (nextPage === endPage) {
             this.setState({ loadEnd: false });
             toast.error(
               `We're sorry, but you've reached the end of search results.`,
@@ -71,7 +71,6 @@ export default class App extends Component {
       page: prevState.page + 1,
     }));
   };
-
   handleFormSubmit = imageName => {
     this.setState({ imageName, images: [] });
   };
@@ -104,13 +103,20 @@ export default class App extends Component {
         )}
         {status === 'rejected' && <div>{message}</div>}
         {status === 'resolved' && (
+          <ImageGallery
+            images={images}
+            tags={tags}
+            onClick={this.handleClick}
+          />
+        )}
+        {loadEnd && (
           <>
             <ImageGallery
               images={images}
               tags={tags}
               onClick={this.handleClick}
             />
-            {loadEnd && <Button handleIncrement={this.loadMoreBtn} />}
+            <Button handleIncrement={this.loadMoreBtn} />
           </>
         )}
 
