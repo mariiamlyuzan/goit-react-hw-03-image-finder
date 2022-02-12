@@ -116,6 +116,14 @@ export default class App extends Component {
               tags={tags}
               onClick={this.handleClick}
             />
+            {status === 'pending' && (
+              <MutatingDots
+                color="#00BFFF"
+                height={80}
+                width={80}
+                ariaLabel="loading"
+              />
+            )}
             <Button handleIncrement={this.loadMoreBtn} />
           </>
         )}
